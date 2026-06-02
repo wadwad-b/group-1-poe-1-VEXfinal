@@ -106,19 +106,32 @@ def stopMotors():
     drivetrain.stop()   # Stop both motors
     wait(0.5, SECONDS)  # Wait 0.5 seconds for the system to stabilize
 
-def driveStraight(distance, setpoint, motorVelocity):
+def accelerate(currentVelocity, targetVelocity, step):
+    """
+    Gradually accelerate the motors to the target velocity by increasing the velocity by the acceleration step 
+    """
+    currentVelocity += step
+    if abs(currentVelocity) > abs(targetVelocity):
+        currentVelocity = targetVelocity
+
+    return currentVelocity
+
+
+def driveStraight(distance, setpoint, targetVelocity):
     """
     1. distance = distance to travel in inches
     2. setpoint = 0-degrees
-    3. motorVelocity = the velocity of the motors (+) => forward, (-) => backward
+    3. targetVelocity = the target velocity of the motors (+) => forward, (-) => backward
     """
+
+    motorVelocity = 0;
 
     inertial_1.reset_rotation() # Reset the rotation before each driving action
 
     # Set stopping mode for the motors
 
-    leftMotor.set_stopping(COAST)
-    rightMotor.set_stopping(COAST)
+    leftMotor.set_stopping(BRAKE)
+    rightMotor.set_stopping(BRAKE)
 
     kP = 0.37   # Proportional constant for driving straight (used to calculate correction term to maintain course)
                 # If too small, correction will occur to slowly
@@ -136,8 +149,8 @@ def driveStraight(distance, setpoint, motorVelocity):
     leftMotor.set_position(0, DEGREES)
     rightMotor.set_position(0, DEGREES)
 
-    # Drive forward if motor velocity > 0
-    if motorVelocity > 0:
+    # Drive forward if target velocity > 0
+    if targetVelocity > 0:
         # while loop to track the distance traveled
         while leftMotor.position() < distance:
             error = setpoint - inertial_1.rotation()    # Calculate error
@@ -146,7 +159,8 @@ def driveStraight(distance, setpoint, motorVelocity):
             # Correct motor velocities
             # If error > 0 (setpoint > rotation) => drifting left
             # If error < 0 (setpoint < rotation) => drifting right
-
+            if motorVelocity < targetVelocity:
+                motorVelocity = accelerate(motorVelocity, targetVelocity, 0.1) # Accelerate
             leftMotor.set_velocity(motorVelocity + correction, PERCENT)
             rightMotor.set_velocity(motorVelocity - correction, PERCENT)
 
@@ -158,7 +172,7 @@ def driveStraight(distance, setpoint, motorVelocity):
         # Stop motors when the desired distance is reached
         stopMotors()
     
-    # Drive straight in reverse if motor velocity < 0
+    # Drive straight in reverse if target velocity < 0
     else:
 
         distance *= -1 # Make distance positive for reverse driving
@@ -170,7 +184,8 @@ def driveStraight(distance, setpoint, motorVelocity):
             # Correct motor velocities
             # If error > 0 (setpoint > rotation) => drifting left
             # If error < 0 (setpoint < rotation) => drifting right
-
+            if motorVelocity > targetVelocity:
+                motorVelocity = accelerate(motorVelocity, targetVelocity, -0.1) # Accelerate
             leftMotor.set_velocity(motorVelocity + correction, PERCENT)
             rightMotor.set_velocity(motorVelocity - correction, PERCENT)
 
@@ -295,10 +310,6 @@ def main():
     bump()                      # Call bump() to execute the program
     inertialCalibration()       # Calibrate the inertial sensor
 
-    driveStraight(92.5, 0, 50)
-    liftArm(20, 60)
-    driveStraight(30, 0, -50)
-    pointTurn(90)
-    driveStraight(3, 0, 50)
-    liftArm(20, -60)
+    driveStraight(94, 0, 100)   # Test drive straight function (distance in inches, setpoint, target velocity in %)
+
 main()
