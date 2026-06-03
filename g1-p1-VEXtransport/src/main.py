@@ -161,6 +161,10 @@ def driveStraight(distance, setpoint, targetVelocity):
             # If error < 0 (setpoint < rotation) => drifting right
             if motorVelocity < targetVelocity:
                 motorVelocity = accelerate(motorVelocity, targetVelocity, 0.1) # Accelerate
+
+            # Manual deceleration as the robot approaches the target
+            if leftMotor.position() > distance - (10/wheelCircumference)*360 and motorVelocity > 10: # If we are within 4 inches of the target, decelerate to prevent overshooting
+                motorVelocity = 0.5 * targetVelocity
             leftMotor.set_velocity(motorVelocity + correction, PERCENT)
             rightMotor.set_velocity(motorVelocity - correction, PERCENT)
 
@@ -186,6 +190,9 @@ def driveStraight(distance, setpoint, targetVelocity):
             # If error < 0 (setpoint < rotation) => drifting right
             if motorVelocity > targetVelocity:
                 motorVelocity = accelerate(motorVelocity, targetVelocity, -0.1) # Accelerate
+            # Manual deceleration as the robot approaches the target
+            if leftMotor.position() < distance + (10/wheelCircumference)*360 and motorVelocity > 10: # If we are within 4 inches of the target, decelerate to prevent overshooting
+                motorVelocity = 0.5 * targetVelocity
             leftMotor.set_velocity(motorVelocity + correction, PERCENT)
             rightMotor.set_velocity(motorVelocity - correction, PERCENT)
 
@@ -245,7 +252,7 @@ def pointTurn(setpoint):
         kP = 0.04
         kD = 0.08
     else:               # Values if counterclockwise
-        kP = 0.045
+        kP = 0.04
         kD = 0.016
 
     # Define maxiumm velocity and previous error terms
@@ -310,6 +317,11 @@ def main():
     bump()                      # Call bump() to execute the program
     inertialCalibration()       # Calibrate the inertial sensor
 
-    driveStraight(94, 0, 100)   # Test drive straight function (distance in inches, setpoint, target velocity in %)
+    driveStraight(96, 0, 100)   # Test drive straight function (distance in inches, setpoint, target velocity in %)
+    liftArm(40, 60)
+    driveStraight(9, 0, -80)
+    pointTurn(90)               # Test point turn function (setpoint in degrees)
+    driveStraight(63, 0, 100)
+    pointTurn(45)
 
 main()
