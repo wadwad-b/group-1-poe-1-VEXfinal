@@ -191,7 +191,7 @@ def driveStraight(distance, setpoint, targetVelocity):
             if motorVelocity > targetVelocity:
                 motorVelocity = accelerate(motorVelocity, targetVelocity, -0.1) # Accelerate
             # Manual deceleration as the robot approaches the target
-            if leftMotor.position() < distance + (10/wheelCircumference)*360 and motorVelocity > 10: # If we are within 4 inches of the target, decelerate to prevent overshooting
+            if leftMotor.position() < distance + (10/wheelCircumference)*360 and motorVelocity < -10: # If we are within 4 inches of the target, decelerate to prevent overshooting
                 motorVelocity = 0.5 * targetVelocity
             leftMotor.set_velocity(motorVelocity + correction, PERCENT)
             rightMotor.set_velocity(motorVelocity - correction, PERCENT)
@@ -253,7 +253,7 @@ def pointTurn(setpoint):
         kD = 0.08
     else:               # Values if counterclockwise
         kP = 0.04
-        kD = 0.016
+        kD = 0.00
 
     # Define maxiumm velocity and previous error terms
     maxVelocity = 50        # Units: %
@@ -308,6 +308,11 @@ def liftArm(motorVelocity, liftAngle):
     liftMotor.spin_for(FORWARD, motorAngularDisplacement, DEGREES)
     wait(0.5, SECONDS)
 
+def pointTurns():
+    bump()
+    inertialCalibration()
+    pointTurn(270)
+
 
 #-------------------Define main() Function---------------------#
 def main():
@@ -317,11 +322,20 @@ def main():
     bump()                      # Call bump() to execute the program
     inertialCalibration()       # Calibrate the inertial sensor
 
-    driveStraight(96, 0, 100)   # Test drive straight function (distance in inches, setpoint, target velocity in %)
+    driveStraight(96.6, 0, 100)   # Test drive straight function (distance in inches, setpoint, target velocity in %)
     liftArm(40, 60)
-    driveStraight(9, 0, -80)
+    driveStraight(12, 0, -50)
     pointTurn(90)               # Test point turn function (setpoint in degrees)
-    driveStraight(63, 0, 100)
+    driveStraight(72, 0, 100)
     pointTurn(45)
+    driveStraight(12, 0, 90)
+    liftArm(40, -60)
+    wait(0.25, SECONDS)
+    liftArm(40, 100)
+    driveStraight(2, 0, -50)
+    pointTurn(145)
+    driveStraight(20, 0, -80)
+    pointTurn(90)
+    driveStraight(40, 0, -100)
 
 main()
