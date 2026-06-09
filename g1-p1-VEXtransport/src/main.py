@@ -252,11 +252,11 @@ def pointTurn(setpoint):
         kP = 0.04
         kD = 0.08
     else:               # Values if counterclockwise
-        kP = 0.04
-        kD = 0.00
+        kP = 0.047
+        kD = 0.02
 
     # Define maxiumm velocity and previous error terms
-    maxVelocity = 50        # Units: %
+    maxVelocity = 40        # Units: %
     previousError = 0.0     # Error from previous iteration of the control loop
 
     while True:
@@ -312,6 +312,9 @@ def pointTurns():
     bump()
     inertialCalibration()
     pointTurn(270)
+    pointTurn(100)
+    pointTurn(250)
+    pointTurn(200)
 
 
 #-------------------Define main() Function---------------------#
@@ -334,7 +337,7 @@ def main():
     liftArm(40, 100)
     driveStraight(2, 0, -50)
     pointTurn(145)
-    driveStraight(20, 0, -80)
+    driveStraight(24, 0, -80)
     pointTurn(90)
     driveStraight(40, 0, -100)
 
