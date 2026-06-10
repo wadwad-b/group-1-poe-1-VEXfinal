@@ -252,8 +252,8 @@ def pointTurn(setpoint):
         kP = 0.04
         kD = 0.08
     else:               # Values if counterclockwise
-        kP = 0.047
-        kD = 0.02
+        kP = 0.049
+        kD = 0.0
 
     # Define maxiumm velocity and previous error terms
     maxVelocity = 40        # Units: %
@@ -325,19 +325,19 @@ def main():
     bump()                      # Call bump() to execute the program
     inertialCalibration()       # Calibrate the inertial sensor
 
-    driveStraight(96.6, 0, 100)   # Test drive straight function (distance in inches, setpoint, target velocity in %)
+    driveStraight(96.6, 0, 100)
     liftArm(40, 60)
     driveStraight(12, 0, -50)
-    pointTurn(90)               # Test point turn function (setpoint in degrees)
+    pointTurn(87)
     driveStraight(72, 0, 100)
     pointTurn(45)
-    driveStraight(12, 0, 90)
+    driveStraight(10, 0, 90)
     liftArm(40, -60)
     wait(0.25, SECONDS)
     liftArm(40, 100)
-    driveStraight(2, 0, -50)
-    pointTurn(145)
-    driveStraight(24, 0, -80)
+    driveStraight(2.5, 0, -50)
+    pointTurn(140)
+    driveStraight(19, 0, -80)
     pointTurn(90)
     driveStraight(40, 0, -100)
 
