@@ -133,7 +133,7 @@ def driveStraight(distance, setpoint, targetVelocity):
     leftMotor.set_stopping(BRAKE)
     rightMotor.set_stopping(BRAKE)
 
-    kP = 0.37   # Proportional constant for driving straight (used to calculate correction term to maintain course)
+    kP = 0.53   # Proportional constant for driving straight (used to calculate correction term to maintain course)
                 # If too small, correction will occur to slowly
                 # If too large, overcorrection will occur
                 # Determine best value by iteratively testing
