@@ -110,11 +110,11 @@ def accelerate(currentVelocity, targetVelocity, step):
     """
     Gradually accelerate the motors to the target velocity by increasing the velocity by the acceleration step 
     """
-    currentVelocity += step
-    if abs(currentVelocity) > abs(targetVelocity):
+    currentVelocity += step                           # Increase the current velocity by the acceleration step
+    if abs(currentVelocity) > abs(targetVelocity):    # If the target velocity is exceeded, cap it at the target velocity
         currentVelocity = targetVelocity
 
-    return currentVelocity
+    return currentVelocity                            # Return the updated velocity
 
 
 def driveStraight(distance, setpoint, targetVelocity):
@@ -160,9 +160,10 @@ def driveStraight(distance, setpoint, targetVelocity):
             # If error > 0 (setpoint > rotation) => drifting left
             # If error < 0 (setpoint < rotation) => drifting right
             if motorVelocity < targetVelocity:
-                motorVelocity = accelerate(motorVelocity, targetVelocity, 0.1) # Accelerate
+                motorVelocity = accelerate(motorVelocity, targetVelocity, 0.1) # accelerate motors by specified step value
 
-            # Manual deceleration as the robot approaches the target
+            # Manual deceleration as the robot approaches the target 
+            # If the bot is within 10 inches of the target, halve the motor velocity
             if leftMotor.position() > distance - (10/wheelCircumference)*360 and motorVelocity > 10: # If we are within 4 inches of the target, decelerate to prevent overshooting
                 motorVelocity = 0.5 * targetVelocity
             leftMotor.set_velocity(motorVelocity + correction, PERCENT)
@@ -189,8 +190,9 @@ def driveStraight(distance, setpoint, targetVelocity):
             # If error > 0 (setpoint > rotation) => drifting left
             # If error < 0 (setpoint < rotation) => drifting right
             if motorVelocity > targetVelocity:
-                motorVelocity = accelerate(motorVelocity, targetVelocity, -0.1) # Accelerate
+                motorVelocity = accelerate(motorVelocity, targetVelocity, -0.1) # accelerate motors by specified step value
             # Manual deceleration as the robot approaches the target
+            # If the bot is within 10 inches of the target, halve the motor velo
             if leftMotor.position() < distance + (10/wheelCircumference)*360 and motorVelocity < -10: # If we are within 4 inches of the target, decelerate to prevent overshooting
                 motorVelocity = 0.5 * targetVelocity
             leftMotor.set_velocity(motorVelocity + correction, PERCENT)
@@ -309,6 +311,9 @@ def liftArm(motorVelocity, liftAngle):
     wait(0.5, SECONDS)
 
 def pointTurns():
+    """
+    Test point turns to calibrate the proportional and derivative constants
+    """
     bump()
     inertialCalibration()
     pointTurn(270)
@@ -325,6 +330,7 @@ def main():
     bump()                      # Call bump() to execute the program
     inertialCalibration()       # Calibrate the inertial sensor
 
+    # Final autonomous routine
     driveStraight(96.6, 0, 100)
     liftArm(40, 60)
     driveStraight(12, 0, -50)
@@ -337,7 +343,7 @@ def main():
     liftArm(40, 100)
     driveStraight(2.5, 0, -50)
     pointTurn(140)
-    driveStraight(19, 0, -80)
+    driveStraight(19.5, 0, -80)
     pointTurn(90)
     driveStraight(40, 0, -100)
 
