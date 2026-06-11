@@ -334,7 +334,7 @@ def main():
     driveStraight(96.6, 0, 100)
     liftArm(40, 60)
     driveStraight(12, 0, -50)
-    pointTurn(87)
+    pointTurn(89)
     driveStraight(72, 0, 100)
     pointTurn(45)
     driveStraight(10, 0, 90)
@@ -343,7 +343,7 @@ def main():
     liftArm(40, 100)
     driveStraight(2.5, 0, -50)
     pointTurn(140)
-    driveStraight(19.5, 0, -80)
+    driveStraight(22.5, 0, -80)
     pointTurn(90)
     driveStraight(40, 0, -100)
 
